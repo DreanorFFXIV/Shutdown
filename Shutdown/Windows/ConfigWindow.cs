@@ -2,7 +2,6 @@
 using System.Numerics;
 using System.Runtime.InteropServices.JavaScript;
 using Dalamud.Interface.Windowing;
-using ECommons.Logging;
 using ImGuiNET;
 
 namespace Shutdown.Windows;

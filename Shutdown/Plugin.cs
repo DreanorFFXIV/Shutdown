@@ -4,12 +4,8 @@ using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Interface.Windowing;
+using Dalamud.Logging;
 using Dalamud.Plugin.Services;
-using ECommons;
-using ECommons.DalamudServices;
-using ECommons.Logging;
-using ECommons.Reflection;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using Shutdown.Windows;
 
 namespace Shutdown
@@ -21,6 +17,7 @@ namespace Shutdown
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private ICommandManager CommandManager { get; init; }
+        private IFramework framework { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("Shutdown");
 
@@ -28,7 +25,8 @@ namespace Shutdown
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] ICommandManager commandManager)
+            [RequiredVersion("1.0")] ICommandManager commandManager,
+            [RequiredVersion("1.0")] IFramework framework)
         {
             this.PluginInterface = pluginInterface;
             this.CommandManager = commandManager;
@@ -45,9 +43,7 @@ namespace Shutdown
                 HelpMessage = "A useful message to display in /xlhelp"
             });
 
-            ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector);
-
-            Svc.Framework.Update += ShutdownGame;
+            framework.Update += ShutdownGame;
             
             this.PluginInterface.UiBuilder.Draw += DrawUI;
             this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
@@ -58,7 +54,7 @@ namespace Shutdown
             this.WindowSystem.RemoveAllWindows();
             
             ConfigWindow.Dispose();
-            Svc.Framework.Update -= ShutdownGame;
+            framework.Update -= ShutdownGame;
             
             this.CommandManager.RemoveHandler(CommandName);
         }
@@ -84,10 +80,9 @@ namespace Shutdown
                 PluginLog.Log("shutdown");
                 Configuration.ExecuteEnabled = false;
                 Configuration.Save();
-                if (DalamudReflector.TryGetDalamudPlugin("Yes Already", out var pl, false, true))
-                {
-                    pl.GetStaticFoP("YesAlready.Service", "Configuration").SetFoP("Enabled", true);
-                }
+                
+                CommandManager.ProcessCommand("/pyes toggle");
+                PluginLog.Log("yep");
 
                 //gracefully close game
                 Process.Start("shutdown", "/s /t 60");
