@@ -30,7 +30,7 @@ namespace Shutdown
         {
             this.PluginInterface = pluginInterface;
             this.CommandManager = commandManager;
-
+            this.framework = framework;
             this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             this.Configuration.Initialize(this.PluginInterface);
 
