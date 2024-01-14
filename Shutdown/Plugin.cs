@@ -86,8 +86,6 @@ namespace Shutdown
                 //gracefully close game
                 Process.Start("shutdown", "/s /t 60");
                 Process.GetCurrentProcess().CloseMainWindow();
-                
-                CommandManager.ProcessCommand("/pyes toggle");
             }
         }
         
