@@ -53,10 +53,10 @@ namespace Shutdown
         {
             this.WindowSystem.RemoveAllWindows();
             
-            ConfigWindow.Dispose();
             framework.Update -= ShutdownGame;
             
             this.CommandManager.RemoveHandler(CommandName);
+            ConfigWindow.Dispose();
         }
 
         private void OnCommand(string command, string args)
@@ -82,11 +82,12 @@ namespace Shutdown
                 Configuration.Save();
                 
                 CommandManager.ProcessCommand("/pyes toggle");
-                PluginLog.Log("yep");
 
                 //gracefully close game
                 Process.Start("shutdown", "/s /t 60");
                 Process.GetCurrentProcess().CloseMainWindow();
+                
+                CommandManager.ProcessCommand("/pyes toggle");
             }
         }
         
